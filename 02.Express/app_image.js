@@ -8,7 +8,7 @@ const template = require('./view/template_image');
 
 const app = express();
 app.use(express.static(__dirname + '/public/fileWebImage'));
-app.use(multipart({uploadDir: __dirname+'/public/fileWebImage'}));
+app.use(multipart({uploadDir: __dirname + '/public/fileWebImage'}));
 app.use(bodyParser.urlencoded({extended: false}));
 
 app.get('/', (req, res) => {
@@ -27,7 +27,7 @@ app.get('/id/:id', (req, res) => {
         let list = template.listGen(filelist);
         let title = req.params.id;
         let control = template.buttonGen(title);
-        let filepath = 'data/' + title + '.txt';
+        let filepath = __dirname + '/data/' + title + '.txt';
         fs.readFile(filepath, 'utf8', (error, buffer) => {
             buffer = buffer.replace(/\n/g, '<br>');
             let html = view.index(title, list, buffer, control, true);
@@ -72,8 +72,8 @@ app.get('/delete/id/:id', (req, res) => {
 });
 
 app.post('/delete', (req, res) => {
-    let filepath = 'data/' + req.body.subject + '.txt';
-    let imagepath = 'public/fileWebImage/' + req.body.subject + '.jpg';
+    let filepath = __dirname + '/data/' + req.body.subject + '.txt';
+    let imagepath = __dirname + '/public/fileWebImage/' + req.body.subject + '.jpg';
     fs.unlink(filepath, error => {
         fs.unlink(imagepath, error => {
             res.redirect('/');
@@ -86,7 +86,7 @@ app.get('/update/id/:id', (req, res) => {
         let list = template.listGen(filelist);
         let title = req.params.id;
         let control = template.buttonGen();
-        let filepath = 'data/' + title + '.txt';
+        let filepath = __dirname + '/data/' + title + '.txt';
         fs.readFile(filepath, 'utf8', (error, buffer) => {
             let content = template.updateForm(title, buffer);
             let html = view.index(title, list, content, control, true);
@@ -99,14 +99,14 @@ app.post('/update', (req, res) => {
     let original = req.body.original;
     let subject = req.body.subject;
     let description = req.body.description;
-    let filepath = 'data/' + original + '.txt';
-    let imagePath = 'public/fileWebImage/' + original + '.jpg';
+    let filepath = __dirname + '/data/' + original + '.txt';
+    let imagePath = __dirname + '/public/fileWebImage/' + original + '.jpg';
     fs.writeFile(filepath, description, error => {
         if (original !== subject) {
-            fs.renameSync(filepath, `data/${subject}.txt`);
-            fs.renameSync(imagePath, `public/fileWebImage/${subject}.jpg`);
+            fs.renameSync(filepath, `${__dirname}/data/${subject}.txt`);
+            fs.renameSync(imagePath, `${__dirname}/public/fileWebImage/${subject}.jpg`);
         }
-        console.log(req.files);
+        //console.log(req.files);
         let uploadType = req.files.image.type;
         let uploadPath = req.files.image.path;
         if (uploadType.indexOf('image') >= 0) {
