@@ -8,7 +8,6 @@ module.exports = {
         let list = '<ul>\n';
         for (let file of filelist) {
             let filename = file.substring(0, file.length-4);
-            //list += `<li><a href="/?id=${filename}">${filename}</a></li>\n`;
             list += `<li><a href="/id/${filename}">${filename}</a></li>\n`
         }
         list += '</ul>\n';
@@ -31,7 +30,7 @@ module.exports = {
     },
     createForm: function() {
         return `
-        <form action="/create" method="post">
+        <form action="/create" method="post" enctype="multipart/form-data">
             <table>
             <tr>
                 <td><label>제목</label></td>
@@ -40,6 +39,10 @@ module.exports = {
             <tr>
                 <td><label>내용</label></td>
                 <td><textarea name="description" cols="40" rows="5"></textarea></td>
+            </tr>
+            <tr>
+                <td><label>사진</label></td>
+                <td><input type="file" name="image"></td>
             </tr>
             <tr>
                 <td colspan="2" style="text-align: center;"><input type="submit" value="생성"></td>
