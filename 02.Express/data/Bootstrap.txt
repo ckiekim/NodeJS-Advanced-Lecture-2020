@@ -1,0 +1,15 @@
+        body = '';
+        req.on('data', function(data) {
+            body += data;
+        })
+        req.on('end', function() {
+            let param = qs.parse(body);
+            //console.log(param.subject, param.description);
+            let filepath = 'data/' + param.subject + '.txt';
+            fs.writeFile(filepath, param.description, error => {
+                let encoded = encodeURI(`/?id=${param.subject}`);
+                console.log(encoded);
+                res.writeHead(302, {'Location': encoded});
+                res.end();
+            });
+        }); 
