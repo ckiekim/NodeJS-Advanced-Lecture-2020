@@ -89,7 +89,7 @@ app.get('/update/id/:id', (req, res) => {
         let filepath = 'data/' + title + '.txt';
         fs.readFile(filepath, 'utf8', (error, buffer) => {
             let content = template.updateForm(title, buffer);
-            let html = view.index(`${title} 수정`, list, content, control);
+            let html = view.index(title, list, content, control, true);
             res.end(html);
         });
     });
@@ -100,11 +100,26 @@ app.post('/update', (req, res) => {
     let subject = req.body.subject;
     let description = req.body.description;
     let filepath = 'data/' + original + '.txt';
+    let imagePath = 'public/fileWebImage/' + original + '.jpg';
     fs.writeFile(filepath, description, error => {
         if (original !== subject) {
             fs.renameSync(filepath, `data/${subject}.txt`);
+            fs.renameSync(imagePath, `public/fileWebImage/${subject}.jpg`);
         }
-        res.redirect(`/id/${subject}`)
+        console.log(req.files);
+        let uploadType = req.files.image.type;
+        let uploadPath = req.files.image.path;
+        if (uploadType.indexOf('image') >= 0) {
+            let imageName = subject + '.jpg';
+            let newFileName = __dirname + '/public/fileWebImage/' + imageName;
+            fs.rename(uploadPath, newFileName, error => {
+                res.redirect(`/id/${subject}`);
+            });
+        } else {    // 이미지가 아닌 경우 업로드 파일 삭제
+            fs.unlink(uploadPath, error => {
+                res.redirect(`/id/${subject}`);
+            });
+        }
     });
 });
 

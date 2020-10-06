@@ -62,7 +62,7 @@ module.exports = {
     },
     updateForm: function(subject, description) {
         return `
-        <form action="/update" method="post">
+        <form action="/update" method="post" enctype="multipart/form-data">
             <input type="hidden" name="original" value="${subject}">
             <table>
             <tr>
@@ -72,6 +72,10 @@ module.exports = {
             <tr>
                 <td><label>내용</label></td>
                 <td><textarea name="description" cols="40" rows="5">${description}</textarea></td>
+            </tr>
+            <tr>
+                <td><label>사진</label></td>
+                <td><input type="file" name="image"></td>
             </tr>
             <tr>
                 <td colspan="2" style="text-align: center;"><input type="submit" value="수정"></td>

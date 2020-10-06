@@ -2,6 +2,7 @@ exports.index = function(title, list, content, control, showImage) {
     let tdImg = `<td> </td>`;
     if (showImage) 
         tdImg = `<td width="300"><img src="/${title}.jpg" alt="${title}" style="margin-left: 20px"></td>`
+    
     return `
 <!DOCTYPE html>
 <html lang="ko">
