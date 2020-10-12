@@ -1,14 +1,13 @@
-module.exports = {
-    mainForm:   function(rows) {
-        let tableRow = '';
-        for (let row of rows) {
-            tableRow += `<tr>
-                            <td>${row.sid}</td>
-                            <td>${row.title}</td>
-                            <td>${row.lyrics}</td>
-                        </tr>`;
-        }
-        return `
+module.exports.mainForm = function(rows) {
+    let tableRow = '';
+    for (let row of rows) {
+        tableRow += `<tr>
+                        <td>${row.sid}</td>
+                        <td>${row.title}</td>
+                        <td>${row.lyrics}</td>
+                    </tr>`;
+    }
+    return `
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -29,6 +28,5 @@ module.exports = {
     </table>
 </body>
 </html>
-        `;
-    }
+    `;
 }
