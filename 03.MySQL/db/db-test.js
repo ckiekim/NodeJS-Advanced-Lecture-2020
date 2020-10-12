@@ -1,6 +1,6 @@
 const fs = require('fs');
 const mysql = require('mysql');
-let info = fs.readFileSync('../mysql.json', 'utf8');
+let info = fs.readFileSync('./mysql.json', 'utf8');
 let config = JSON.parse(info);
 
 function getConnection() {
@@ -18,7 +18,20 @@ function getConnection() {
     return conn;
 }
 
-let sql = `select * from song where sid=?;`;
+let sql = `SELECT song.sid, song.title, gg.name, song.lyrics FROM song
+left JOIN girl_group AS gg
+ON song.sid=gg.hit_song_id
+ORDER BY song.sid DESC
+LIMIT 10;`;
+let conn = getConnection();
+conn.query(sql, function(error, rows, fields) {
+    if (error)
+        console.log(error);
+    console.log(rows);
+});
+conn.end();
+
+/* let sql = `select * from song where sid=?;`;
 let conn = getConnection();
 conn.query(sql, 123, function(error, rows, fields) {
     if (error)
@@ -27,7 +40,7 @@ conn.query(sql, 123, function(error, rows, fields) {
 });
 conn.end();
 
-/* let sql = `delete from song where sid=?;`;
+let sql = `delete from song where sid=?;`;
 let conn = getConnection();
 conn.query(sql, 125, function(error, fields) {
     if (error)

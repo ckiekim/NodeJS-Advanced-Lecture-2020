@@ -28,6 +28,21 @@ module.exports = {
         });
         conn.end();
     },
+    getJoinLists:    function(callback) {
+        let conn = this.getConnection();
+        let sql = `SELECT song.sid, song.title, gg.name, song.lyrics 
+                    FROM song
+                    left JOIN girl_group AS gg
+                    ON song.sid=gg.hit_song_id
+                    ORDER BY song.sid DESC
+                    LIMIT 10;`;
+        conn.query(sql, (error, rows, fields) => {
+            if (error)
+                console.log(error);
+            callback(rows);
+        });
+        conn.end();
+    },
     insertSong:     function(params, callback) {
         let sql = `insert into song(title, lyrics) values(?, ?);`;
         let conn = this.getConnection();

@@ -6,11 +6,16 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
 
 app.get('/', (req, res) => {
-    dm.getAllLists(rows => {
+    /* dm.getAllLists(rows => {
         const view = require('./view/list');
         let html = view.mainForm(rows);
         res.send(html);
-    }); 
+    }); */ 
+    dm.getJoinLists(rows => {
+        const view = require('./view/join');
+        let html = view.mainForm(rows);
+        res.send(html);
+    });
 });
 
 app.get('/insert', (req, res) => {
