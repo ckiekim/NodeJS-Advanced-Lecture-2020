@@ -5,6 +5,10 @@ module.exports.mainForm = function(rows) {
                         <td>${row.sid}</td>
                         <td>${row.title}</td>
                         <td>${row.lyrics}</td>
+                        <td>
+                            <a href="/update/${row.sid}">수정</a>
+                            <a href="/delete/${row.sid}">삭제</a>
+                        </td>
                     </tr>`;
     }
     return `
@@ -23,6 +27,7 @@ module.exports.mainForm = function(rows) {
             <th>sid</th>
             <th>제목</th>
             <th>가사</th>
+            <th>액션</th>
         </tr>
         ${tableRow}
     </table>

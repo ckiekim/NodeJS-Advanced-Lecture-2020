@@ -1,4 +1,4 @@
-module.exports.insertForm = function() {
+module.exports.updateForm = function(result) {
     return `
     <!DOCTYPE html>
     <html lang="ko">
@@ -8,17 +8,18 @@ module.exports.insertForm = function() {
         <title>Song Form</title>
     </head>
     <body>
-        <h3>노래 추가</h3>
+        <h3>노래 수정</h3>
         <hr>
-        <form action="/insert" method="post">
+        <form action="/update" method="post">
+            <input type="hidden" name="sid" value="${result.sid}">
             <table>
                 <tr>
                     <td><label for="title">노래 제목</label></td>
-                    <td><input type="text" name="title" id="title"></td>
+                    <td><input type="text" name="title" id="title" value="${result.title}"></td>
                 </tr>
                 <tr>
                     <td><label for="lyrics">가사</label></td>
-                    <td><input type="text" name="lyrics" id="lyrics"></td>
+                    <td><input type="text" name="lyrics" id="lyrics" value="${result.lyrics}"></td>
                 </tr>
                 <tr>
                     <td colspan="2"><input type="submit" value="제출"></td>
