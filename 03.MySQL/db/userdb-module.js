@@ -1,5 +1,6 @@
 const fs = require('fs');
 const mysql = require('mysql');
+const crypto = require('crypto');
 let info = fs.readFileSync('./mysql.json', 'utf8');
 let config = JSON.parse(info);
 
@@ -29,5 +30,21 @@ module.exports = {
             callback(rows);
         });
         conn.end();
+    },
+    getUserInfo:    function(uid, callback) {
+        let conn = this.getConnection();
+        let sql = `select * from users where uid like ?;`;
+        conn.query(sql, uid, (error, results, fields) => {
+            if (error)
+                console.log(error);
+            callback(results[0]);   // 주의할 것
+        });
+        conn.end();
+    },
+    generateHash:   function(something) {
+        // SHA: Secure Hash Algorithm
+        let shasum = crypto.createHash('sha256');   // sha256, sha512
+        shasum.update(something);
+        return shasum.digest('base64');  // hex, base64
     }
 }
