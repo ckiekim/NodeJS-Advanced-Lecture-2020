@@ -1,17 +1,24 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const dm = require('./db/userdb-module');
 const am = require('./view/alertMsg');
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(cookieParser());
 
 app.get('/', (req, res) => {
-    dm.getAllLists(rows => {
-        const view = require('./view/userList');
-        let html = view.mainForm(rows);
-        res.send(html);
-    }); 
+    console.log(req.cookies);
+    if (req.cookies && req.cookies.isLoggedIn) {    // 로그인 된 상태
+        dm.getAllLists(rows => {
+            const view = require('./view/cookieList');
+            let html = view.mainForm(rows);
+            res.send(html);
+        }); 
+    } else {
+        res.redirect('/login');
+    }
 });
 
 app.get('/login', (req, res) => {
@@ -30,6 +37,7 @@ app.post('/login', (req, res) => {
             res.send(html);
         } else {
             if (result.pwd === pwdHash) {
+                res.cookie('isLoggedIn', 1);
                 console.log('Login 성공');
                 res.redirect('/');
             } else {
@@ -38,6 +46,11 @@ app.post('/login', (req, res) => {
             }
         }
     });
+});
+
+app.get('/logout', (req, res) => {
+    res.clearCookie('isLoggedIn');
+    res.redirect('/login');
 });
 
 app.listen(3000, () => {
