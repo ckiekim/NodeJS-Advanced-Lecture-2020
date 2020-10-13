@@ -1,6 +1,7 @@
 package-lock.json
 tmp/
 mysql.json
+sessions/
 
 # Logs
 logs
