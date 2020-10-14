@@ -46,5 +46,15 @@ module.exports = {
         let shasum = crypto.createHash('sha256');   // sha256, sha512
         shasum.update(something);
         return shasum.digest('base64');  // hex, base64
+    },
+    deleteUser:     function(uid, callback) {
+        let conn = this.getConnection();
+        let sql = `update users set isDeleted=1 where uid like ?;`;
+        conn.query(sql, uid, (error, fields) => {
+            if (error)
+                console.log(error);
+            callback();
+        });
+        conn.end();
     }
 }
