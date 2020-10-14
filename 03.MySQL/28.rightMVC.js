@@ -5,6 +5,7 @@ const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const dm = require('./db/userdb-module');
 const am = require('./view/alertMsg');
+const ut = require('./28.util');
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
@@ -16,15 +17,7 @@ app.use(session({
     store: new FileStore({logFn: function(){}})
 }));
 
-function isLoggedIn(req, res, next) {
-    if (!req.session.uid) {    
-        res.redirect('/login');
-    } else {
-        next();
-    }
-}
-
-app.get('/', isLoggedIn, (req, res) => {
+app.get('/', ut.isLoggedIn, (req, res) => {
     dm.getAllLists(rows => {
         const view = require('./view/rightList');
         let html = view.mainForm(req.session.uname, rows);
@@ -32,7 +25,7 @@ app.get('/', isLoggedIn, (req, res) => {
     }); 
 });
 
-app.get('/delete/:uid', isLoggedIn, (req, res) => {
+app.get('/delete/:uid', ut.isLoggedIn, (req, res) => {
     if (req.params.uid === req.session.uid) {   // 권한 있음
         dm.deleteUser(req.params.uid, () => {
             res.redirect('/');
@@ -52,7 +45,7 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
     let uid = req.body.uid;
     let pwd = req.body.pwd;
-    let pwdHash = dm.generateHash(pwd);
+    let pwdHash = ut.generateHash(pwd);
     dm.getUserInfo(uid, result => {
         if (result === undefined) {
             let html = am.alertMsg(`Login 실패: uid ${uid}이/가 없습니다.`, '/login');
