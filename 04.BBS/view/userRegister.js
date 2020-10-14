@@ -31,6 +31,14 @@ module.exports.register = function () {
                         <td><input type="text" name="uname" id="uname"></td>
                     </tr>
                     <tr>
+                        <td><label for="tel">전화번호</label></td>
+                        <td><input type="text" name="tel" id="tel"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="email">이메일</label></td>
+                        <td><input type="text" name="email" id="email"></td>
+                    </tr>
+                    <tr>
                         <td colspan="2" style="text-align: center;">
                             <input class="btn btn-primary" type="submit" value="제출">
                             <input class="btn btn-secondary" type="reset" value="취소">

@@ -22,12 +22,13 @@ app.use(session({
 app.use('/user', uRouter);
 
 app.get('/', (req, res) => {
-    fs.readFile('./view/index.html', 'utf8', (error, data) => {
-        res.send(data);
+    res.redirect('/login');
+});
+
+app.get('/login', (req, res) => {
+    fs.readFile('./view/index.html', 'utf8', (error, html) => {
+        res.send(html);
     });
-    /* const view = require('./view/test');
-    let html = view.test();
-    res.send(html); */
 });
 
 app.listen(3000, () => {
