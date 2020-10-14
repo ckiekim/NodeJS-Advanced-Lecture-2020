@@ -36,6 +36,35 @@ app.get('/delete/:uid', ut.isLoggedIn, (req, res) => {
     }
 });
 
+app.get('/update/:uid', ut.isLoggedIn, (req, res) => {
+    if (req.params.uid === req.session.uid) {   // 권한 있음
+        dm.getUserInfo(req.params.uid, (result) => {
+            const view = require('./view/userUpdate');
+            html = view.updateForm(result);
+            res.send(html);
+        });
+    } else {
+        let html = am.alertMsg('수정 권한이 없습니다.', '/');
+        res.send(html);
+    }
+});
+
+app.post('/update', ut.isLoggedIn, (req, res) => {
+    let uid = req.body.uid;
+    let pwd = req.body.pwd;
+    let pwd2 = req.body.pwd2;
+    if (pwd === pwd2) {
+        let pwdHash = ut.generateHash(pwd); 
+        let params = [pwdHash, uid];
+        dm.updateUser(params, () => {
+            res.redirect('/');
+        });
+    } else {                    // 패스워드 입력이 잘못된 경우
+        let html = am.alertMsg(`패스워드가 일치하지 않습니다.`, `/update/${uid}`);
+        res.send(html);
+    }
+});
+
 app.get('/login', (req, res) => {
     const view = require('./view/userLogin');
     let html = view.loginForm();
