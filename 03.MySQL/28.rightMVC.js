@@ -3,11 +3,14 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
+const favicon = require('express-favicon');
 const dm = require('./db/userdb-module');
 const am = require('./view/alertMsg');
 const ut = require('./28.util');
 
 const app = express();
+app.use(express.static(__dirname + '/public'));
+app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser('1q2w3e4r5t6y'));
 app.use(session({
