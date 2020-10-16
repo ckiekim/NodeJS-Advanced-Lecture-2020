@@ -31,7 +31,7 @@ module.exports = {
                     <a class="nav-link" href="/bbs/write"><i class="far fa-edit"></i>글쓰기</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/user/list"><i class="far fa-user"></i>사용자</a>
+                    <a class="nav-link" href="/user/dispatch"><i class="far fa-user"></i>사용자</a>
                 </li>
                 <li class="nav-item ml-5">
                     <a class="nav-link" href="/logout">로그아웃</a>

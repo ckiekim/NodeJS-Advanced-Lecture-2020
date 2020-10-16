@@ -1,5 +1,4 @@
 const tplt = require('./template');
-const ut = require('../util');
 
 module.exports.view = function (navBar, result, replies) {
     let content = result.content.replace(/\n/g, '<br>');
@@ -40,8 +39,8 @@ module.exports.view = function (navBar, result, replies) {
         <div class="col-10"></div>
         <div class="col-2">
             <span style="font-size: 1.5em;">
-                <a href="/bbs/update/${result.bid}"><i class="fas fa-edit"></i></a>&nbsp;
-                <a href="/bbs/delete/${result.bid}"><i class="fas fa-trash-alt"></i></a>
+                <a href="/bbs/update/${result.bid}/uid/${result.uid}"><i class="fas fa-edit"></i></a>&nbsp;
+                <a href="/bbs/delete/${result.bid}/uid/${result.uid}"><i class="fas fa-trash-alt"></i></a>
             </span>
         </div>
         <div class="col-12"><hr></div>
@@ -50,6 +49,7 @@ module.exports.view = function (navBar, result, replies) {
             ${cards}
             <form class="form-inline" action="/bbs/reply" method="post">
                 <input type="hidden" name="bid" value="${result.bid}">
+                <input type="hidden" name="uid" value="${result.uid}">
                 <label for="content" class="ml-5 mt-3 mr-3">댓글</label>
                 <textarea class="ml-3 mt-3 mr-3" id="content" name="content" rows="3" cols="80"></textarea>
                 <button type="submit" class="btn btn-primary ml-3 mt-3 mr-5">등록</button>

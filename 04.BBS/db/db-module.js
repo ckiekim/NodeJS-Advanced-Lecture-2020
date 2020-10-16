@@ -123,6 +123,36 @@ module.exports = {
         });
         conn.end();
     },
+    insertBbs:  function(params, callback) {
+        let conn = this.getConnection();
+        let sql = `insert into bbs(uid, title, content) values(?,?,?);`;
+        conn.query(sql, params, (error, fields) => {
+            if (error)
+                console.log(error);
+            callback();
+        });
+        conn.end();
+    },
+    updateBbs:  function(params, callback) {
+        let conn = this.getConnection();
+        let sql = `update bbs set title=?, content=?, modTime=now() where bid=?;`;
+        conn.query(sql, params, (error, fields) => {
+            if (error)
+                console.log(error);
+            callback();
+        });
+        conn.end();
+    },
+    deleteBbs:  function(bid, callback) {
+        let conn = this.getConnection();
+        let sql = `update bbs set isDeleted=1 where bid=?;`;
+        conn.query(sql, bid, (error, fields) => {
+            if (error)
+                console.log(error);
+            callback();
+        });
+        conn.end();
+    },
 
     // 사용자 DB
     registerUser:     function(params, callback) {
@@ -142,6 +172,51 @@ module.exports = {
             if (error)
                 console.log(error);
             callback(results[0]);   // 주의할 것
+        });
+        conn.end();
+    },
+    getUserTotalCount:      function(callback) {
+        let conn = this.getConnection();
+        let sql = `select count(*) as count from users where isDeleted=0;`;
+        conn.query(sql, (error, results, fields) => {
+            if (error)
+                console.log(error);
+            callback(results[0]);   // 주의할 것
+        });
+        conn.end();
+    },
+    getUserList:      function(offset, callback) {
+        let conn = this.getConnection();
+        let sql = `SELECT uid, uname, tel, email,
+                    DATE_FORMAT(regDate, '%Y-%m-%d') AS regDate
+                    FROM users
+                    WHERE isDeleted=0
+                    ORDER BY uname
+                    LIMIT 10 OFFSET ?;`;
+        conn.query(sql, offset, (error, results, fields) => {
+            if (error)
+                console.log(error);
+            callback(results);
+        });
+        conn.end();
+    },
+    updateUser:     function(params, callback) {
+        let conn = this.getConnection();
+        let sql = `update users set pwd=?, uname=?, tel=?, email=? where uid=?;`;
+        conn.query(sql, params, (error, fields) => {
+            if (error)
+                console.log(error);
+            callback();
+        });
+        conn.end();
+    },
+    deleteUser:     function(uid, callback) {
+        let conn = this.getConnection();
+        let sql = `update users set isDeleted=1 where uid=?;`;
+        conn.query(sql, uid, (error, fields) => {
+            if (error)
+                console.log(error);
+            callback();
         });
         conn.end();
     }

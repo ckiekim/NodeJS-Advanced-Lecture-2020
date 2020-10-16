@@ -56,7 +56,7 @@ conn.query(sqlBbs, function(error, fields) {
 });
 conn.end(); */
 
-/* let bbsArray = [
+let bbsArray = [
     ['eskim', '미스터 션샤인', `2018년 방영한, 구한말을 배경으로 하는 한국 드라마.`],
     ['eskim', '도깨비', `불멸의 삶을 끝내기 위해 인간 신부가 필요한 도깨비(공유)와 그와 함께 기묘한 동거를 시작한 기억상실증 저승사자(이동욱). 그런 그들 앞에 '도깨비 신부'라 주장하는 '죽었어야 할 운명'의 소녀 지은탁(김고은)이 나타나며 벌어지는 신비로운 낭만설화이다.`],
     ['eskim', '태양의 후예', `낯선 땅 극한의 환경 속에서 사랑과 성공을 꿈꾸는 젊은 군인과 의사들을 통해 삶의 가치를 담아낸 블록버스터급 휴먼 멜로 드라마`],
@@ -74,7 +74,7 @@ for (let params of bbsArray) {
             console.log(error);
     });
 }
-conn.end(); */
+conn.end();
 
 /* let replyBbs = `
     create table if not exists reply (
@@ -111,7 +111,7 @@ for (let params of replyArray) {
 }
 conn.end(); */
 
-let sqlSelect = `select * from bbs where bid=1006;`;
+/* let sqlSelect = `select * from bbs where bid=1006;`;
 let sqlReplyCount = `select count(*) as count from reply where bid=?;`;
 
 let conn = getConnection();
@@ -124,4 +124,4 @@ conn.query(sqlSelect, (error, rows, fields) => {
     });
     conn2.end();
 })
-conn.end();
+conn.end(); */
