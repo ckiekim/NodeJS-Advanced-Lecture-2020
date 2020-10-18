@@ -5,7 +5,7 @@ const alert = require('./view/alertMsg');
 const tplt = require('./view/template');
 
 const bRouter = express.Router();
-bRouter.get('/list/:page', (req, res) => {
+bRouter.get('/list/:page', ut.isLoggedIn, (req, res) => {
     let page = parseInt(req.params.page);
     req.session.currentPage = page;
     let offset = (page - 1) * 10;
@@ -23,7 +23,7 @@ bRouter.get('/list/:page', (req, res) => {
     });
 });
 
-bRouter.post('/search', (req, res) => {
+bRouter.post('/search', ut.isLoggedIn, (req, res) => {
     let keyword = '%' + req.body.keyword + '%';
     console.log(keyword);
     dm.getSearchList(keyword, rows => {
@@ -34,7 +34,7 @@ bRouter.post('/search', (req, res) => {
     })
 });
 
-bRouter.get('/bid/:bid', (req, res) => {
+bRouter.get('/bid/:bid', ut.isLoggedIn, (req, res) => {
     let bid = parseInt(req.params.bid);
     dm.getBbsData(bid, result => {
         dm.increaseViewCount(bid, () => {
@@ -48,7 +48,7 @@ bRouter.get('/bid/:bid', (req, res) => {
     });
 });
 
-bRouter.post('/reply', (req, res) => {
+bRouter.post('/reply', ut.isLoggedIn, (req, res) => {
     let bid = parseInt(req.body.bid);
     let uid = req.session.uid;
     let content = req.body.content;
@@ -61,14 +61,14 @@ bRouter.post('/reply', (req, res) => {
     });
 });
 
-bRouter.get('/write', (req, res) => {
+bRouter.get('/write', ut.isLoggedIn, (req, res) => {
     let view = require('./view/bbsWrite');
     let navBar = tplt.navBar(req.session.uname?req.session.uname:'개발자');
     let html = view.write(navBar);
     res.send(html);
 });
 
-bRouter.post('/write', (req, res) => {
+bRouter.post('/write', ut.isLoggedIn, (req, res) => {
     let title = req.body.title;
     let content = req.body.content;
     let params = [req.session.uid, title, content];
@@ -77,7 +77,7 @@ bRouter.post('/write', (req, res) => {
     });
 });
 
-bRouter.get('/update/:bid/uid/:uid', (req, res) => {
+bRouter.get('/update/:bid/uid/:uid', ut.isLoggedIn, (req, res) => {
     let bid = req.params.bid;
     let uid = req.params.uid;
     if (uid !== req.session.uid) {
@@ -93,7 +93,7 @@ bRouter.get('/update/:bid/uid/:uid', (req, res) => {
     }
 });
 
-bRouter.post('/update', (req, res) => {
+bRouter.post('/update', ut.isLoggedIn, (req, res) => {
     let bid = req.body.bid;
     let title = req.body.title;
     let content = req.body.content;
@@ -103,7 +103,7 @@ bRouter.post('/update', (req, res) => {
     });
 });
 
-bRouter.get('/delete/:bid/uid/:uid', (req, res) => {
+bRouter.get('/delete/:bid/uid/:uid', ut.isLoggedIn, (req, res) => {
     let bid = req.params.bid;
     let uid = req.params.uid;
     if (uid !== req.session.uid) {
@@ -117,7 +117,7 @@ bRouter.get('/delete/:bid/uid/:uid', (req, res) => {
     }
 });
 
-bRouter.get('/deleteConfirm/:bid', (req, res) => {
+bRouter.get('/deleteConfirm/:bid', ut.isLoggedIn, (req, res) => {
     let bid = req.params.bid;
     let page = parseInt(req.session.currentPage);
     dm.deleteBbs(bid, () => {

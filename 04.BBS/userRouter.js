@@ -5,7 +5,7 @@ const alert = require('./view/alertMsg');
 const tplt = require('./view/template');
 
 const uRouter = express.Router();
-uRouter.get('/dispatch', (req, res) => {
+uRouter.get('/dispatch', ut.isLoggedIn, (req, res) => {
     if (req.session.uid === 'admin') {
         res.redirect('/user/list/1');
     } else {
@@ -13,7 +13,7 @@ uRouter.get('/dispatch', (req, res) => {
     }
 });
 
-uRouter.get('/list/:page', (req, res) => {
+uRouter.get('/list/:page', ut.isLoggedIn, (req, res) => {
     if (req.session.uid !== 'admin') {
         let html = alert.alertMsg('조회 권한이 없습니다.', `/bbs/list/1`);
         res.send(html);
@@ -32,7 +32,7 @@ uRouter.get('/list/:page', (req, res) => {
     }
 });
 
-uRouter.get('/uid/:uid', (req, res) => {
+uRouter.get('/uid/:uid', ut.isLoggedIn, (req, res) => {
     let uid = req.params.uid;
     if (uid != req.session.uid) {
         let html = alert.alertMsg('조회 권한이 없습니다.', `/bbs/list/1`);
@@ -47,13 +47,13 @@ uRouter.get('/uid/:uid', (req, res) => {
     }
 });
 
-uRouter.get('/register', (req, res) => {
+uRouter.get('/register', ut.isLoggedIn, (req, res) => {
     let view = require('./view/userRegister');
     let html = view.register();
     res.send(html);
 });
 
-uRouter.post('/register', (req, res) => {
+uRouter.post('/register', ut.isLoggedIn, (req, res) => {
     let uid = req.body.uid;
     let pwd = req.body.pwd;
     let pwd2 = req.body.pwd2;
@@ -72,7 +72,7 @@ uRouter.post('/register', (req, res) => {
     }
 });
 
-uRouter.get('/update/:uid', (req, res) => {
+uRouter.get('/update/:uid', ut.isLoggedIn, (req, res) => {
     let uid = req.params.uid;
     if (uid != req.session.uid) {
         let html = alert.alertMsg('수정 권한이 없습니다.', `/bbs/list/1`);
@@ -87,7 +87,7 @@ uRouter.get('/update/:uid', (req, res) => {
     }
 });
 
-uRouter.post('/update', (req, res) => {
+uRouter.post('/update', ut.isLoggedIn, (req, res) => {
     let uid = req.body.uid;
     let pwdHash = req.body.pwdHash;
     let pwd = req.body.pwd;
@@ -108,7 +108,7 @@ uRouter.post('/update', (req, res) => {
     }
 });
 
-uRouter.get('/delete/:uid', (req, res) => {
+uRouter.get('/delete/:uid', ut.isLoggedIn, (req, res) => {
     let uid = req.params.uid;
     if (req.session.uid !== 'admin') {
         let html = alert.alertMsg('삭제 권한이 없습니다.', `/bbs/list/1`);
@@ -121,7 +121,7 @@ uRouter.get('/delete/:uid', (req, res) => {
     }
 });
 
-uRouter.get('/deleteConfirm/:uid', (req, res) => {
+uRouter.get('/deleteConfirm/:uid', ut.isLoggedIn, (req, res) => {
     let uid = req.params.uid;
     dm.deleteUser(uid, () => {
         res.redirect('/user/list/1');
