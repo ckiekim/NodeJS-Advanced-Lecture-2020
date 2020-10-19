@@ -47,13 +47,13 @@ uRouter.get('/uid/:uid', ut.isLoggedIn, (req, res) => {
     }
 });
 
-uRouter.get('/register', ut.isLoggedIn, (req, res) => {
+uRouter.get('/register', (req, res) => {
     let view = require('./view/userRegister');
     let html = view.register();
     res.send(html);
 });
 
-uRouter.post('/register', ut.isLoggedIn, (req, res) => {
+uRouter.post('/register', (req, res) => {
     let uid = req.body.uid;
     let pwd = req.body.pwd;
     let pwd2 = req.body.pwd2;
