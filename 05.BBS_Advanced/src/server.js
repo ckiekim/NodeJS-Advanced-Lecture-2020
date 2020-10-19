@@ -4,16 +4,20 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const fs = require('fs');
-/* const dm = require('./db/db-module');
+const ejs = require('ejs');
+const dm = require('./db/db-module');
+const vm = require('./view/view-module');
 const bRouter = require('./bbsRouter');
 const uRouter = require('./userRouter');
-const ut = require('./util'); */
+const ut = require('./util');
 
 const app = express();
-app.use('/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist'));
-app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist'));
-app.use('/popper', express.static(__dirname + '/node_modules/@popperjs/core/dist/umd'));
-app.use(express.static(__dirname + '/public'));
+app.use('/bootstrap', express.static(__dirname + '/../node_modules/bootstrap/dist'));
+app.use('/jquery', express.static(__dirname + '/../node_modules/jquery/dist'));
+app.use('/popper', express.static(__dirname + '/../node_modules/@popperjs/core/dist/umd'));
+app.use('/ckeditor', express.static(__dirname + '/../node_modules/@ckeditor/ckeditor5-build-classic/build'));
+app.use('/ckeditor-image', express.static(__dirname + '/../node_modules/@ckeditor/ckeditor5-easy-image/src'));
+app.use(express.static(__dirname + '/../public'));
 app.use(bodyParser.urlencoded({extended: false})); 
 app.use(cookieParser('1q2w3e4r5t6y'));
 app.use(session({
@@ -22,20 +26,22 @@ app.use(session({
     saveUninitialized: true,
     store: new FileStore({logFn: function(){}})
 }));
-//app.use('/bbs', bRouter);
-//app.use('/user', uRouter);
+app.use('/bbs', bRouter);
+app.use('/user', uRouter);
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/view');
 
 app.get('/', (req, res) => {
-    res.redirect('/login');
+    res.redirect('/bbs/list/1');
 });
 
 app.get('/login', (req, res) => {
-    fs.readFile(__dirname+'/src/view/login.html', 'utf8', (error, html) => {
+    fs.readFile(__dirname+'/view/login.html', 'utf8', (error, html) => {
         res.send(html);
     });
 });
 
-/* app.post('/login', (req, res) => {
+app.post('/login', (req, res) => {
     let uid = req.body.uid;
     let pwd = req.body.pwd;
     let pwdHash = ut.generateHash(pwd);
@@ -57,12 +63,12 @@ app.get('/login', (req, res) => {
             }
         }
     });
-}); */
+});
 
-/* app.get('/logout', (req, res) => {
+app.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/login');
-}); */
+});
 
 app.listen(3000, () => {
     console.log('MyBBS Server running at http://127.0.0.1:3000');

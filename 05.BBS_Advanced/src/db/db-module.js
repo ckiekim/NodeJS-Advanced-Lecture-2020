@@ -1,0 +1,228 @@
+const fs = require('fs');
+const mysql = require('mysql2/promise');
+let info = fs.readFileSync('./db/mysql.json', 'utf8');
+let config = JSON.parse(info);
+const connectionPool = mysql.createPool(config);
+
+module.exports = {
+    getConnection:  function() {
+        let conn = mysql.createConnection({
+            host:   config.host,
+            user:   config.user,
+            password:   config.password,
+            database:   config.database,
+            port:   config.port,
+            co
+        });
+        conn.connect(function(error) {
+            if (error) 
+                console.log('mysql connection error :' + err);
+        });
+        return conn;
+    },
+    // BBS DB
+    getBbsList:     async function(offset) {
+        try {
+            let conn = await connectionPool.getConnection(async conn => conn);
+            let sql = `SELECT b.bid, b.uid, u.uname, b.title, b.content, 
+                        b.modTime, b.viewCount, b.replyCount
+                        FROM bbs AS b
+                        JOIN users AS u
+                        ON b.uid=u.uid
+                        WHERE b.isDeleted=0
+                        ORDER BY b.bid DESC 
+                        LIMIT 10 offset ?;`;
+            let [rows] = await conn.query(sql, [offset]);
+            //console.log(rows);
+            conn.release();
+            return(rows);
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
+    },
+    getBbsTotalCount:     function(callback) {
+        let conn = connectionPool.getConnection();
+        let sql = `SELECT count(*) as count FROM bbs where isDeleted=0;`;
+        conn.query(sql, (error, results, fields) => {
+            if (error)
+                console.log(error);
+            callback(results[0]);   // 주의할 것
+        });
+        conn.release();
+    },
+    getSearchList:     function(keyword, callback) {
+        let conn = connectionPool.getConnection();
+        let sql = `SELECT b.bid, b.uid, u.uname, b.title, b.content, 
+                    b.modTime, b.viewCount, b.replyCount
+                    FROM bbs AS b
+                    JOIN users AS u
+                    ON b.uid=u.uid
+                    WHERE b.isDeleted=0 and b.title like ?
+                    ORDER BY b.bid DESC;`;
+        conn.query(sql, keyword, (error, rows, fields) => {
+            if (error)
+                console.log(error);
+            callback(rows);
+        });
+        conn.release();
+    },
+    getBbsData:     function(bid, callback) {
+        let conn = connectionPool.getConnection();
+        let sql = `SELECT b.bid, b.uid, u.uname, b.title, b.content, 
+                    DATE_FORMAT(b.modTime, '%Y-%m-%d %T') as modTime, 
+                    b.viewCount, b.replyCount
+                    FROM bbs AS b
+                    JOIN users AS u
+                    ON b.uid=u.uid
+                    WHERE b.bid=?;`;
+        conn.query(sql, bid, (error, rows, fields) => {
+            if (error)
+                console.log(error);
+            callback(rows[0]);      // 주의할 것
+        });
+        conn.release();
+    },
+    getReplyData:     function(bid, callback) {
+        let conn = connectionPool.getConnection();
+        let sql = `SELECT r.rid, r.bid, r.uid, u.uname, r.content, r.isMine,
+                    DATE_FORMAT(r.regTime, '%Y-%m-%d %T') as regTime
+                    FROM reply AS r
+                    JOIN users AS u
+                    ON r.uid = u.uid
+                    WHERE r.bid=?;`;
+        conn.query(sql, bid, (error, rows, fields) => {
+            if (error)
+                console.log(error);
+            callback(rows);
+        });
+        conn.release();
+    },
+    increaseViewCount:  function(bid, callback) {
+        let conn = connectionPool.getConnection();
+        let sql = `update bbs set viewCount=viewCount+1 where bid=?;`;
+        conn.query(sql, bid, (error, fields) => {
+            if (error)
+                console.log(error);
+            callback();
+        });
+        conn.release();
+    },
+    increaseReplyCount:  function(bid, callback) {
+        let conn = connectionPool.getConnection();
+        let sql = `update bbs set replyCount=replyCount+1 where bid=?;`;
+        conn.query(sql, bid, (error, fields) => {
+            if (error)
+                console.log(error);
+            callback();
+        });
+        conn.release();
+    },
+    insertReply:  function(params, callback) {
+        let conn = connectionPool.getConnection();
+        let sql = `insert into reply(bid, uid, content, isMine) values(?,?,?,?);`;
+        conn.query(sql, params, (error, fields) => {
+            if (error)
+                console.log(error);
+            callback();
+        });
+        conn.release();
+    },
+    insertBbs:  function(params, callback) {
+        let conn = connectionPool.getConnection();
+        let sql = `insert into bbs(uid, title, content) values(?,?,?);`;
+        conn.query(sql, params, (error, fields) => {
+            if (error)
+                console.log(error);
+            callback();
+        });
+        conn.release();
+    },
+    updateBbs:  function(params, callback) {
+        let conn = connectionPool.getConnection();
+        let sql = `update bbs set title=?, content=?, modTime=now() where bid=?;`;
+        conn.query(sql, params, (error, fields) => {
+            if (error)
+                console.log(error);
+            callback();
+        });
+        conn.release();
+    },
+    deleteBbs:  function(bid, callback) {
+        let conn = connectionPool.getConnection();
+        let sql = `update bbs set isDeleted=1 where bid=?;`;
+        conn.query(sql, bid, (error, fields) => {
+            if (error)
+                console.log(error);
+            callback();
+        });
+        conn.release();
+    },
+
+    // 사용자 DB
+    registerUser:     function(params, callback) {
+        let conn = connectionPool.getConnection();
+        let sql = `insert into users(uid, pwd, uname, tel, email) values(?,?,?,?,?);`;
+        conn.query(sql, params, (error, fields) => {
+            if (error)
+                console.log(error);
+            callback();
+        });
+        conn.release();
+    },
+    getUserInfo:    function(uid, callback) {
+        let conn = connectionPool.getConnection();
+        let sql = `select * from users where uid like ?;`;
+        conn.query(sql, uid, (error, results, fields) => {
+            if (error)
+                console.log(error);
+            callback(results[0]);   // 주의할 것
+        });
+        conn.release();
+    },
+    getUserTotalCount:      function(callback) {
+        let conn = connectionPool.getConnection();
+        let sql = `select count(*) as count from users where isDeleted=0;`;
+        conn.query(sql, (error, results, fields) => {
+            if (error)
+                console.log(error);
+            callback(results[0]);   // 주의할 것
+        });
+        conn.release();
+    },
+    getUserList:      function(offset, callback) {
+        let conn = connectionPool.getConnection();
+        let sql = `SELECT uid, uname, tel, email,
+                    DATE_FORMAT(regDate, '%Y-%m-%d') AS regDate
+                    FROM users
+                    WHERE isDeleted=0
+                    ORDER BY uname
+                    LIMIT 10 OFFSET ?;`;
+        conn.query(sql, offset, (error, results, fields) => {
+            if (error)
+                console.log(error);
+            callback(results);
+        });
+        conn.release();
+    },
+    updateUser:     function(params, callback) {
+        let conn = connectionPool.getConnection();
+        let sql = `update users set pwd=?, uname=?, tel=?, email=? where uid=?;`;
+        conn.query(sql, params, (error, fields) => {
+            if (error)
+                console.log(error);
+            callback();
+        });
+        conn.release();
+    },
+    deleteUser:     function(uid, callback) {
+        let conn = connectionPool.getConnection();
+        let sql = `update users set isDeleted=1 where uid=?;`;
+        conn.query(sql, uid, (error, fields) => {
+            if (error)
+                console.log(error);
+            callback();
+        });
+        conn.release();
+    }
+}

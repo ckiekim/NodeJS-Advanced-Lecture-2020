@@ -2,13 +2,16 @@
   "name": "bbsv2",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "src/server.js",
   "scripts": {
+    "server": "cd src && nodemon server",
     "build": "webpack -w"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^23.0.0",
+    "@ckeditor/ckeditor5-easy-image": "^23.0.0",
     "@popperjs/core": "^2.5.3",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.5.3",
@@ -17,6 +20,7 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "jquery": "^3.5.1",
+    "medium-editor": "^5.23.3",
     "moment": "^2.29.1",
     "multer": "^1.4.2",
     "mysql": "^2.18.1",
