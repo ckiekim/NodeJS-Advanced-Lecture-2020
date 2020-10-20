@@ -23,9 +23,9 @@ uRouter.get('/list/:page', ut.isLoggedIn, (req, res) => {
     } else {
         let page = parseInt(req.params.page);
         let offset = (page - 1) * 10;
-        dm.getUserTotalCount(result => {
-            let totalPage = Math.ceil(result.count / 10);
-            dm.getUserList(offset, rows => {
+        Promise.all([dm.getUserTotalCount(), dm.getUserList(offset)])
+            .then(([result, rows]) => {
+                let totalPage = Math.ceil(result.count / 10);
                 let navBar = vm.navBar(req.session.uname?req.session.uname:'개발자');
                 let trs = vm.userList_trs(rows);
                 let pages = vm.userList_pages(page, totalPage);
@@ -34,8 +34,8 @@ uRouter.get('/list/:page', ut.isLoggedIn, (req, res) => {
                 }, (error, html) => {
                     res.send(html);
                 });
-            });
-        });
+            })
+            .catch(console.log);
     }
 });
 
@@ -45,14 +45,16 @@ uRouter.get('/uid/:uid', ut.isLoggedIn, (req, res) => {
         let html = alert.alertMsg('조회 권한이 없습니다.', `/bbs/list/1`);
         res.send(html);
     } else {
-        dm.getUserInfo(uid, result => {
-            let navBar = vm.navBar(req.session.uname?req.session.uname:'개발자');
-            ejs.renderFile('./view/userView.ejs', {
-                path, navBar, result
-            }, (error, html) => {
-                res.send(html);
-            });
-        });
+        dm.getUserInfo(uid)
+            .then(result => {
+                let navBar = vm.navBar(req.session.uname?req.session.uname:'개발자');
+                ejs.renderFile('./view/userView.ejs', {
+                    path, navBar, result
+                }, (error, html) => {
+                    res.send(html);
+                });
+            })
+            .catch(console.log);
     }
 });
 
@@ -75,9 +77,9 @@ uRouter.post('/register', (req, res) => {
     } else {
         let pwdHash = ut.generateHash(pwd);
         let params = [uid, pwdHash, uname, tel, email];
-        dm.registerUser(params, () => {
-            res.redirect('/login');
-        });
+        dm.registerUser(params)
+            .then(() => { res.redirect('/login'); })
+            .catch(console.log);
     }
 });
 
@@ -87,14 +89,16 @@ uRouter.get('/update/:uid', ut.isLoggedIn, (req, res) => {
         let html = alert.alertMsg('수정 권한이 없습니다.', `/bbs/list/1`);
         res.send(html);
     } else {
-        dm.getUserInfo(uid, result => {
+        dm.getUserInfo(uid)
+        .then(result => {
             let navBar = vm.navBar(req.session.uname?req.session.uname:'개발자');
             ejs.renderFile('./view/userUpdate.ejs', {
                 path, navBar, result
             }, (error, html) => {
                 res.send(html);
             });
-        });
+        })
+        .catch(console.log);
     }
 });
 
@@ -113,9 +117,9 @@ uRouter.post('/update', ut.isLoggedIn, (req, res) => {
         if (pwd)
             pwdHash = ut.generateHash(pwd);
         let params = [pwdHash, uname, tel, email, uid];
-        dm.updateUser(params, () => {
-            res.redirect(`/user/uid/${uid}`);
-        });
+        dm.updateUser(params)
+            .then(() => { res.redirect(`/user/uid/${uid}`); })
+            .catch(console.log);
     }
 });
 
@@ -136,9 +140,9 @@ uRouter.get('/delete/:uid', ut.isLoggedIn, (req, res) => {
 
 uRouter.get('/deleteConfirm/:uid', ut.isLoggedIn, (req, res) => {
     let uid = req.params.uid;
-    dm.deleteUser(uid, () => {
-        res.redirect('/user/list/1');
-    });
+    dm.deleteUser(uid)
+        .then(() => { res.redirect('/user/list/1'); })
+        .catch(console.log);
 });
 
 module.exports = uRouter;

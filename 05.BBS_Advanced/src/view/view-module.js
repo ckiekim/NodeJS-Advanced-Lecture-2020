@@ -19,7 +19,7 @@ module.exports = {
                     <a class="nav-link" href="/user/dispatch"><i class="far fa-user"></i>사용자</a>
                 </li>
                 <li class="nav-item ml-5">
-                    <a class="nav-link" href="/logout">로그아웃</a>
+                    <a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i>로그아웃</a>
                 </li>
             </ul>
             <nav class="navbar navbar-light mr-4">
@@ -76,7 +76,6 @@ module.exports = {
     },
     bbsView_cards:  function(replies) {
         let cards = '';
-        console.log(replies);
         for (let reply of replies) {
             cards += (reply.isMine == 0) ?
                     `<div class="card bg-light text-dark mt-1" style="margin-right: 45%;">` :

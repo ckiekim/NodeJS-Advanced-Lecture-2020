@@ -10,11 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@ckeditor/ckeditor5-build-classic": "^23.0.0",
-    "@ckeditor/ckeditor5-easy-image": "^23.0.0",
     "@popperjs/core": "^2.5.3",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.5.3",
+    "ckeditor4": "^4.15.0",
     "cookie-parser": "^1.4.5",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
