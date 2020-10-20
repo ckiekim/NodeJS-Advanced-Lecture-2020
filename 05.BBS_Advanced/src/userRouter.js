@@ -1,6 +1,7 @@
 const express = require('express');
 const ejs = require('ejs');
 const pm = require('path');     // path module
+const multer = require('multer');
 const ut = require('./util');
 const dm = require('./db/db-module');
 const vm = require('./view/view-module');
@@ -8,6 +9,18 @@ const alert = require('./view/alertMsg');
 
 const uRouter = express.Router();
 const path = pm.join(__dirname, 'view/template');
+// multer setting
+const upload = multer({
+    storage: multer.diskStorage({
+        // set a localstorage destination
+        destination: __dirname + '/../public/upload/',
+        // set a file name
+        filename: (req, file, cb) => {
+            cb(null, new Date().toISOString().replace(/[-:\.A-Z]/g, '') + '_' + file.originalname);
+        }
+    })
+});
+
 uRouter.get('/dispatch', ut.isLoggedIn, (req, res) => {
     if (req.session.uid === 'admin') {
         res.redirect('/user/list/1');
@@ -64,19 +77,21 @@ uRouter.get('/register', (req, res) => {
     });
 });
 
-uRouter.post('/register', (req, res) => {
+uRouter.post('/register', upload.single('photo'), (req, res) => {
     let uid = req.body.uid;
     let pwd = req.body.pwd;
     let pwd2 = req.body.pwd2;
     let uname = req.body.uname;
     let tel = req.body.tel;
     let email = req.body.email;
+    let photo = req.file ? '/upload/' + req.file.filename : null;
+    console.log(photo);
     if (pwd !== pwd2) {
         let html = alert.alertMsg('패스워드가 다릅니다.', '/user/register');
         res.send(html);
     } else {
         let pwdHash = ut.generateHash(pwd);
-        let params = [uid, pwdHash, uname, tel, email];
+        let params = [uid, pwdHash, uname, tel, email, photo];
         dm.registerUser(params)
             .then(() => { res.redirect('/login'); })
             .catch(console.log);

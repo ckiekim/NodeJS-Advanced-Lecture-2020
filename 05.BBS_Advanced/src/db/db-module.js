@@ -167,7 +167,7 @@ module.exports = {
     registerUser:     async function(params) {
         try {
             let conn = await connectionPool.getConnection(async conn => conn);
-            let sql = `insert into users(uid, pwd, uname, tel, email) values(?,?,?,?,?);`;
+            let sql = `insert into users(uid, pwd, uname, tel, email, photo) values(?,?,?,?,?,?);`;
             let [rows] = await conn.query(sql, params);     
             conn.release();
             return; 

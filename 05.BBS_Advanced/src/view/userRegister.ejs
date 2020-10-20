@@ -20,7 +20,7 @@
             </div>
             <div class="col-3"></div>
             <div class="col-6">
-                <form action="/user/register" method="post">
+                <form action="/user/register" method="post" enctype="multipart/form-data">
                     <table class="table table-borderless">
                         <tr>
                             <td><label for="uid">사용자 ID</label></td>
@@ -47,6 +47,15 @@
                             <td><input type="text" name="email" id="email"></td>
                         </tr>
                         <tr>
+                            <td><label for="photo">사진</label></td>
+                            <td>
+                                <div class="custom-file mb-3">
+                                    <input type="file" class="custom-file-input" id="photo" name="photo">
+                                    <label class="custom-file-label" for="photo">업로드할 사진 파일 선택</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
                             <td colspan="2" style="text-align: center;">
                                 <input class="btn btn-primary" type="submit" value="제출">
                                 <input class="btn btn-secondary" type="reset" value="취소">
@@ -60,5 +69,12 @@
     </div>
 
     <%- include(`${path}/footer`); %>
+    <script>
+        // Add the following code if you want the name of the file appear on select
+        $(".custom-file-input").on("change", function() {
+          var fileName = $(this).val().split("\\").pop();
+          $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    </script>
 </body>
 </html> 
