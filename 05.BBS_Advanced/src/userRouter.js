@@ -34,27 +34,32 @@ uRouter.get('/list/:page', ut.isLoggedIn, (req, res) => {
         let html = alert.alertMsg('조회 권한이 없습니다.', `/bbs/list/1`);
         res.send(html);
     } else {
-        let page = parseInt(req.params.page);
-        let offset = (page - 1) * 10;
-        Promise.all([dm.getUserTotalCount(), dm.getUserList(offset)])
-            .then(([result, rows]) => {
-                let totalPage = Math.ceil(result.count / 10);
-                let navBar = vm.navBar(req.session.uname?req.session.uname:'개발자');
-                let trs = vm.userList_trs(rows);
-                let pages = vm.userList_pages(page, totalPage);
-                ejs.renderFile('./view/userList.ejs', {
-                    path, navBar, trs, pages
-                }, (error, html) => {
-                    res.send(html);
-                });
-            })
-            .catch(console.log);
+        if (req.params.page === 'null') {   // 없는 사진 처리
+            res.status(200).send();
+        } else {
+            let page = parseInt(req.params.page);
+            let offset = (page - 1) * 10;
+            //console.log(`offset = ${offset}`);
+            Promise.all([dm.getUserTotalCount(), dm.getUserList(offset)])
+                .then(([result, rows]) => {
+                    let totalPage = Math.ceil(result.count / 10);
+                    let navBar = vm.navBar(req.session.uname?req.session.uname:'개발자');
+                    let trs = vm.userList_trs(rows);
+                    let pages = vm.userList_pages(page, totalPage);
+                    ejs.renderFile('./view/userList.ejs', {
+                        path, navBar, trs, pages
+                    }, (error, html) => {
+                        res.send(html); 
+                    });
+                })
+                .catch(console.log);
+        }
     }
 });
 
 uRouter.get('/uid/:uid', ut.isLoggedIn, (req, res) => {
     let uid = req.params.uid;
-    if (uid != req.session.uid) {
+    if (req.session.uid !== 'admin' && uid != req.session.uid) {
         let html = alert.alertMsg('조회 권한이 없습니다.', `/bbs/list/1`);
         res.send(html);
     } else {
@@ -84,8 +89,8 @@ uRouter.post('/register', upload.single('photo'), (req, res) => {
     let uname = req.body.uname;
     let tel = req.body.tel;
     let email = req.body.email;
-    let photo = req.file ? '/upload/' + req.file.filename : null;
-    console.log(photo);
+    let photo = req.file ? `/upload/${req.file.filename}` : '/upload/blank.png';
+    //console.log(photo);
     if (pwd !== pwd2) {
         let html = alert.alertMsg('패스워드가 다릅니다.', '/user/register');
         res.send(html);
@@ -117,7 +122,7 @@ uRouter.get('/update/:uid', ut.isLoggedIn, (req, res) => {
     }
 });
 
-uRouter.post('/update', ut.isLoggedIn, (req, res) => {
+uRouter.post('/update', ut.isLoggedIn, upload.single('photo'), (req, res) => {
     let uid = req.body.uid;
     let pwdHash = req.body.pwdHash;
     let pwd = req.body.pwd;
@@ -125,14 +130,15 @@ uRouter.post('/update', ut.isLoggedIn, (req, res) => {
     let uname = req.body.uname;
     let tel = req.body.tel;
     let email = req.body.email;
+    let photo = req.file ? '/upload/' + req.file.filename : null;
     if (pwd && pwd !== pwd2) {
         let html = alert.alertMsg('패스워드가 다릅니다.', `/user/update/${uid}`);
         res.send(html);
     } else {
         if (pwd)
             pwdHash = ut.generateHash(pwd);
-        let params = [pwdHash, uname, tel, email, uid];
-        dm.updateUser(params)
+        let params = [pwdHash, uname, tel, email];
+        dm.updateUser(params, photo, uid)
             .then(() => { res.redirect(`/user/uid/${uid}`); })
             .catch(console.log);
     }

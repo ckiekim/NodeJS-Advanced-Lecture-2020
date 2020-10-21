@@ -92,16 +92,27 @@ module.exports = {
     userList_trs:   function(data) {
         let trs = '';
         for (let row of data) {
-            trs += `<tr class="d-flex">
-                        <td class="col-2" style="text-align: center;">${row.uid}</td>
-                        <td class="col-2" style="text-align: center;"><strong>${row.uname}</strong></td>
+            trs += `<tr>
+                        <td style="text-align: center;"><a href="/user/uid/${row.uid}">${row.uid}</a></td>
+                        <td style="text-align: center;"><a href="/user/uid/${row.uid}"><strong>${row.uname}</strong></a></td>
+                        <td style="text-align: center;"><img src="${row.photo}" height="30"></td>
+                        <td style="text-align: center;">${row.tel}</td>
+                        <td style="text-align: center;">${row.email}</td>
+                        <td style="text-align: center;">${row.regDate}</td>
+                        <td style="text-align: center;">
+                            <a href="/user/delete/${row.uid}"><i class="fas fa-trash-alt"></i></a></td>
+                    </tr>
+            `;
+            /* trs += `<tr class="d-flex">
+                        <td class="col-2" style="text-align: center;"><a href="/user/uid/${row.uid}">${row.uid}</a></td>
+                        <td class="col-2" style="text-align: center;"><a href="/user/uid/${row.uid}"><strong>${row.uname}</strong></a></td>
                         <td class="col-2" style="text-align: center;">${row.tel}</td>
                         <td class="col-3" style="text-align: center;">${row.email}</td>
                         <td class="col-2" style="text-align: center;">${row.regDate}</td>
                         <td class="col-1" style="text-align: center;">
                             <a href="/user/delete/${row.uid}"><i class="fas fa-trash-alt"></i></a></td>
                     </tr>
-            `;
+            `; */
         }
         return trs;
     },

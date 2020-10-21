@@ -3,8 +3,10 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
+const favicon = require('express-favicon');
 const fs = require('fs');
 const util = require('util');
+const morgan = require('morgan');
 const dm = require('./db/db-module');
 const bRouter = require('./bbsRouter');
 const uRouter = require('./userRouter');
@@ -16,6 +18,7 @@ app.use('/jquery', express.static(__dirname + '/../node_modules/jquery/dist'));
 app.use('/popper', express.static(__dirname + '/../node_modules/@popperjs/core/dist/umd'));
 app.use('/ckeditor', express.static(__dirname + '/../node_modules/ckeditor4'));
 app.use(express.static(__dirname + '/../public'));
+app.use(favicon(__dirname + '/../public/favicon.ico'));
 app.use(bodyParser.urlencoded({extended: false})); 
 app.use(cookieParser('1q2w3e4r5t6y'));
 app.use(session({
@@ -24,6 +27,7 @@ app.use(session({
     saveUninitialized: true,
     store: new FileStore({logFn: function(){}, path: '../sessions'})
 }));
+//app.use(morgan('combined'));
 app.use('/bbs', bRouter);
 app.use('/user', uRouter);
 app.set('view engine', 'ejs');

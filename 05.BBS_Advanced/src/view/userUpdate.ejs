@@ -13,14 +13,17 @@
                 <hr>
             </div>
             <div class="col-3"></div>
-            <div class="col-6">
-                <form action="/user/update" method="post">
+            <div class="col-7">
+                <form action="/user/update" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="uid" value="<%=result.uid%>">
                     <input type="hidden" name="pwdHash" value="<%=result.pwd%>">
                     <table class="table table-borderless">
                         <tr>
                             <td><label for="uid">사용자 ID</label></td>
                             <td><span id="uid"><%=result.uid%></span></td>
+                            <td rowspan="6">
+                                <img src="<%=result.photo%>" width="150">
+                            </td>
                         </tr>
                         <tr>
                             <td><label for="pwd">패스워드</label></td>
@@ -43,7 +46,16 @@
                             <td><input type="text" name="email" id="email" value="<%=result.email%>"></td>
                         </tr>
                         <tr>
-                            <td colspan="2" style="text-align: center;">
+                            <td><label for="photo">사진</label></td>
+                            <td colspan="2">
+                                <div class="custom-file mb-3">
+                                    <input type="file" class="custom-file-input" id="photo" name="photo">
+                                    <label class="custom-file-label" for="photo">업로드할 사진 파일 선택</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: center;">
                                 <input class="btn btn-primary" type="submit" value="수정">
                                 <input class="btn btn-secondary" type="reset" value="리셋">
                             </td>
@@ -51,10 +63,11 @@
                     </table>
                 </form>
             </div>
-            <div class="col-3"></div>
+            <div class="col-2"></div>
         </div>
     </div>
 
     <%- include(`${path}/footer`); %>
+    <%- include(`${path}/uploadScript`); %>
 </body>
 </html>  

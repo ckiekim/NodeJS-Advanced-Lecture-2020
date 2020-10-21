@@ -203,7 +203,7 @@ module.exports = {
     getUserList:      async function(offset) {
         try {
             let conn = await connectionPool.getConnection(async conn => conn);
-            let sql = `SELECT uid, uname, tel, email,
+            let sql = `SELECT uid, uname, photo, tel, email,
                         DATE_FORMAT(regDate, '%Y-%m-%d') AS regDate
                         FROM users
                         WHERE isDeleted=0
@@ -217,10 +217,18 @@ module.exports = {
             return false;
         }
     },
-    updateUser:     async function(params) {
+    updateUser:     async function(params, photo, uid) {
         try {
             let conn = await connectionPool.getConnection(async conn => conn);
-            let sql = `update users set pwd=?, uname=?, tel=?, email=? where uid=?;`;
+            let sql;
+            if (photo) {
+                sql = `update users set pwd=?, uname=?, tel=?, email=?, photo=? where uid=?;`;
+                params.push(photo); 
+                params.push(uid);
+            } else {
+                sql = `update users set pwd=?, uname=?, tel=?, email=? where uid=?;`;
+                params.push(uid);
+            }
             let [rows] = await conn.query(sql, params);     
             conn.release();
             return; 
