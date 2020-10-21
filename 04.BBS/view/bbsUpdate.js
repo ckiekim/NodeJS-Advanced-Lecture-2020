@@ -7,7 +7,7 @@ module.exports.update = function (navBar, data) {
 <div class="container" style="margin-top: 90px;">  
     <div class="row">
         <div class="col-12">
-            <h3>게시판 글쓰기</h3>
+            <h3>게시판 글수정</h3>
             <hr>
         </div>
         <div class="col-1"></div>

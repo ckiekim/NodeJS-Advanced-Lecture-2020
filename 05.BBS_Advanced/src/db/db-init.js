@@ -26,7 +26,8 @@ function getConnection() {
         tel varchar(20),
         email varchar(40),
         regDate datetime default current_timestamp,
-        isDeleted int default 0
+        isDeleted int default 0,
+        photo varchar(80)
     );
 `;
 let conn = getConnection();
@@ -37,13 +38,13 @@ conn.query(sqlUsers, function(error, fields) {
 conn.end(); */
 
 /* let users = [
-    ['admin', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', '관리자', '010-2345-6789', 'admin@hoseo.com'],
-    ['eskim', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', '김은숙', '010-9876-5432', 'eskim@hoseo.com'],
-    ['wjlee', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', '이우정', '010-3456-7890', 'wjlee@hoseo.com'],
-    ['djy', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', '대조영', '010-2323-7878', 'djy@korea.com'],
-    ['gdhong', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', '홍길동', '010-9898-4567', 'gdhong@korea.com']
+    ['admin', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', '관리자', '010-2345-6789', 'admin@hoseo.com', '/upload/blank.png'],
+    ['eskim', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', '김은숙', '010-9876-5432', 'eskim@hoseo.com', '/upload/blank.png'],
+    ['wjlee', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', '이우정', '010-3456-7890', 'wjlee@hoseo.com', '/upload/blank.png'],
+    ['djy', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', '대조영', '010-2323-7878', 'djy@korea.com', '/upload/blank.png'],
+    ['gdhong', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', '홍길동', '010-9898-4567', 'gdhong@korea.com', '/upload/blank.png']
 ];
-let sqlRegister = `insert into users(uid, pwd, uname, tel, email) values(?,?,?,?,?);`;
+let sqlRegister = `insert into users(uid, pwd, uname, tel, email, photo) values(?,?,?,?,?,?);`;
 
 let conn = getConnection();
 for (let params of users) {

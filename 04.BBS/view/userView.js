@@ -8,7 +8,7 @@ module.exports.view = function(navBar, data) {
 <div class="container" style="margin-top: 90px;">  
     <div class="row">
         <div class="col-12">
-            <h3>회원정보 상세조회</h3>
+            <h3>사용자정보 상세조회</h3>
             <hr>
         </div>
         <div class="col-3"></div>
