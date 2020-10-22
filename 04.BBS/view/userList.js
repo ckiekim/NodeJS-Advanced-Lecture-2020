@@ -28,7 +28,7 @@ module.exports.list = function (navBar, data, pageNo, totalPage) {
                         </span>
                     </li>`;
         else
-            pages += `<li class="page-item"><a class="page-link" href="/bbs/list/${page}">${page}</a></li>`;
+            pages += `<li class="page-item"><a class="page-link" href="/user/list/${page}">${page}</a></li>`;
     }
     pages += `<li class="page-item">
                 <a class="page-link" href="#" aria-label="Next">
