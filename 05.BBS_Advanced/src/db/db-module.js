@@ -90,8 +90,10 @@ module.exports = {
             return false;
         }
     },
-    increaseViewCount:  async function(bid) {
+    increaseViewCount:  async function(bid, inc) {
         try {
+            if (inc == 0)
+                return;
             let conn = await connectionPool.getConnection(async conn => conn);
             let sql = `update bbs set viewCount=viewCount+1 where bid=?;`;
             let [rows] = await conn.query(sql, bid);     
@@ -179,7 +181,7 @@ module.exports = {
     getUserInfo:    async function(uid) {
         try {
             let conn = await connectionPool.getConnection(async conn => conn);
-            let sql = `select * from users where uid like ?;`;
+            let sql = `select * from users where uid like ? and isDeleted=0;`;
             let [results] = await conn.query(sql, uid);     // [uid]도 가능
             conn.release();
             return(results[0]);     // 주의할 것

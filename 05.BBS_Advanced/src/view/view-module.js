@@ -52,7 +52,7 @@ module.exports = {
         return trs;
     },
     bbsList_pages:  function(pageNo, startPage, endPage, totalPage) {
-        let leftPage = (pageNo > 10) ? `/bbs/list/${Math.floor(pageNo/10) * 10}` : '#';
+        let leftPage = (pageNo > 10) ? `/bbs/list/${Math.floor((pageNo-1)/10) * 10}` : '#';
         let pages = `<li class="page-item">
                         <a class="page-link active" href="${leftPage}" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span></a>
@@ -129,7 +129,7 @@ module.exports = {
                         </span>
                     </li>`;
             else
-                pages += `<li class="page-item"><a class="page-link" href="/bbs/list/${page}">${page}</a></li>`;
+                pages += `<li class="page-item"><a class="page-link" href="/user/list/${page}">${page}</a></li>`;
         }
         pages += `<li class="page-item">
                     <a class="page-link" href="#" aria-label="Next">

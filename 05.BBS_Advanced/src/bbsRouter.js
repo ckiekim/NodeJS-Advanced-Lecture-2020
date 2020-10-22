@@ -62,15 +62,21 @@ bRouter.post('/search', ut.isLoggedIn, (req, res) => {
 
 bRouter.get('/bid/:bid', ut.isLoggedIn, (req, res) => {
     let bid = parseInt(req.params.bid);
-    Promise.all([dm.getBbsData(bid), dm.getReplyData(bid), dm.increaseViewCount(bid)])
+    Promise.all([dm.getBbsData(bid), dm.getReplyData(bid)])
         .then(([result, replies]) => {
             let navBar = vm.navBar(req.session.uname);
             let cards = vm.bbsView_cards(replies);
-            ejs.renderFile('./view/bbsView.ejs', {
-                path, navBar, result, cards
-            }, (error, html) => {
-                res.send(html);
-            });
+            // 본인 글이면 조회수 증가시키지 않음
+            let inc = (result.uid === req.session.uid) ? 0 : 1;
+            dm.increaseViewCount(bid, inc)
+            .then(() => {
+                ejs.renderFile('./view/bbsView.ejs', {
+                    path, navBar, result, inc, cards
+                }, (error, html) => {
+                    res.send(html);
+                });
+            })
+            .catch(console.log);
         })
         .catch(console.log);
 });
