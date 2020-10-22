@@ -17,7 +17,7 @@ module.exports.list = function (navBar, data, pageNo, startPage, endPage, totalP
         `;
     }
     // 페이지 지원
-    let leftPage = (pageNo > 10) ? `/bbs/list/${Math.floor(pageNo/10) * 10}` : '#';
+    let leftPage = (pageNo > 10) ? `/bbs/list/${Math.floor((pageNo-1)/10) * 10}` : '#';
     let pages = `<li class="page-item">
                     <a class="page-link active" href="${leftPage}" aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span></a>

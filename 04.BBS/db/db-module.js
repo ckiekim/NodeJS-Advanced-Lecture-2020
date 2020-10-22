@@ -167,7 +167,7 @@ module.exports = {
     },
     getUserInfo:    function(uid, callback) {
         let conn = this.getConnection();
-        let sql = `select * from users where uid like ?;`;
+        let sql = `select * from users where uid like ? and isDeleted=0;`;
         conn.query(sql, uid, (error, results, fields) => {
             if (error)
                 console.log(error);
