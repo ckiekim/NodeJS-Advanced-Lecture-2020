@@ -21,7 +21,7 @@ const upload = multer({
     })
 });
 
-bRouter.get('/list/:page', (req, res) => {
+bRouter.get('/list/:page', ut.isLoggedIn, (req, res) => {
     let page = parseInt(req.params.page);
     req.session.currentPage = page;
     let offset = (page - 1) * 10;
@@ -31,7 +31,7 @@ bRouter.get('/list/:page', (req, res) => {
             let startPage = Math.floor((page - 1) / 10) * 10 + 1;
             let endPage = Math.ceil(page / 10) * 10;
             endPage = (endPage > totalPage) ? totalPage : endPage;
-            let navBar = vm.navBar(req.session.uname ? req.session.uname : '개발자');
+            let navBar = vm.navBar(req.session.uname);
             let trs = vm.bbsList_trs(rows);
             let pages = vm.bbsList_pages(page, startPage, endPage, totalPage);
             ejs.renderFile('./view/bbsList.ejs', {
@@ -48,7 +48,7 @@ bRouter.post('/search', ut.isLoggedIn, (req, res) => {
     let keyword = '%' + req.body.keyword + '%';
     dm.getSearchList(keyword)
         .then(rows => {
-            let navBar = vm.navBar(req.session.uname ? req.session.uname : '개발자');
+            let navBar = vm.navBar(req.session.uname);
             let trs = vm.bbsList_trs(rows);
             let search = req.body.keyword;
             ejs.renderFile('./view/bbsSearchList.ejs', {
@@ -64,7 +64,7 @@ bRouter.get('/bid/:bid', ut.isLoggedIn, (req, res) => {
     let bid = parseInt(req.params.bid);
     Promise.all([dm.getBbsData(bid), dm.getReplyData(bid), dm.increaseViewCount(bid)])
         .then(([result, replies]) => {
-            let navBar = vm.navBar(req.session.uname ? req.session.uname : '개발자');
+            let navBar = vm.navBar(req.session.uname);
             let cards = vm.bbsView_cards(replies);
             ejs.renderFile('./view/bbsView.ejs', {
                 path, navBar, result, cards
@@ -87,7 +87,7 @@ bRouter.post('/reply', ut.isLoggedIn, (req, res) => {
 });
 
 bRouter.get('/write', ut.isLoggedIn, (req, res) => {
-    let navBar = vm.navBar(req.session.uname ? req.session.uname : '개발자');
+    let navBar = vm.navBar(req.session.uname);
     ejs.renderFile('./view/bbsWrite.ejs', {
         path, navBar
     }, (error, html) => {
@@ -104,24 +104,18 @@ bRouter.post('/write', ut.isLoggedIn, (req, res) => {
         .catch(console.log);
 });
 
-bRouter.get('/update/:bid/uid/:uid', ut.isLoggedIn, (req, res) => {
+bRouter.get('/update/:bid/uid/:uid', ut.isLoggedIn, ut.hasRight, (req, res) => {
     let bid = req.params.bid;
-    let uid = req.params.uid;
-    if (uid !== req.session.uid) {
-        let html = alert.alertMsg('수정 권한이 없습니다.', `/bbs/bid/${bid}`);
-        res.send(html);
-    } else {
-        dm.getBbsData(bid)
-            .then(result => {
-                let navBar = vm.navBar(req.session.uname ? req.session.uname : '개발자');
-                ejs.renderFile('./view/bbsUpdate.ejs', {
-                    path, navBar, result
-                }, (error, html) => {
-                    res.send(html);
-                });
-            })
-            .catch(console.log);
-    }
+    dm.getBbsData(bid)
+        .then(result => {
+            let navBar = vm.navBar(req.session.uname);
+            ejs.renderFile('./view/bbsUpdate.ejs', {
+                path, navBar, result
+            }, (error, html) => {
+                res.send(html);
+            });
+        })
+        .catch(console.log);
 });
 
 bRouter.post('/update', ut.isLoggedIn, (req, res) => {
@@ -134,20 +128,14 @@ bRouter.post('/update', ut.isLoggedIn, (req, res) => {
         .catch(console.log);
 });
 
-bRouter.get('/delete/:bid/uid/:uid', ut.isLoggedIn, (req, res) => {
+bRouter.get('/delete/:bid/uid/:uid', ut.isLoggedIn, ut.hasRight, (req, res) => {
     let bid = req.params.bid;
-    let uid = req.params.uid;
-    if (uid !== req.session.uid) {
-        let html = alert.alertMsg('삭제 권한이 없습니다.', `/bbs/bid/${bid}`);
+    let navBar = vm.navBar(req.session.uname);
+    ejs.renderFile('./view/bbsDelete.ejs', {
+        path, navBar, bid
+    }, (error, html) => {
         res.send(html);
-    } else {
-        let navBar = vm.navBar(req.session.uname ? req.session.uname : '개발자');
-        ejs.renderFile('./view/bbsDelete.ejs', {
-            path, navBar, bid
-        }, (error, html) => {
-            res.send(html);
-        });
-    }
+    });
 });
 
 bRouter.get('/deleteConfirm/:bid', ut.isLoggedIn, (req, res) => {

@@ -29,51 +29,40 @@ uRouter.get('/dispatch', ut.isLoggedIn, (req, res) => {
     }
 });
 
-uRouter.get('/list/:page', ut.isLoggedIn, (req, res) => {
-    if (req.session.uid !== 'admin') {
-        let html = alert.alertMsg('조회 권한이 없습니다.', `/bbs/list/1`);
-        res.send(html);
+uRouter.get('/list/:page', ut.isLoggedIn, ut.isAdmin, (req, res) => {
+    if (req.params.page === 'null') {   // 없는 사진 처리
+        res.status(200).send();
     } else {
-        if (req.params.page === 'null') {   // 없는 사진 처리
-            res.status(200).send();
-        } else {
-            let page = parseInt(req.params.page);
-            let offset = (page - 1) * 10;
-            //console.log(`offset = ${offset}`);
-            Promise.all([dm.getUserTotalCount(), dm.getUserList(offset)])
-                .then(([result, rows]) => {
-                    let totalPage = Math.ceil(result.count / 10);
-                    let navBar = vm.navBar(req.session.uname?req.session.uname:'개발자');
-                    let trs = vm.userList_trs(rows);
-                    let pages = vm.userList_pages(page, totalPage);
-                    ejs.renderFile('./view/userList.ejs', {
-                        path, navBar, trs, pages
-                    }, (error, html) => {
-                        res.send(html); 
-                    });
-                })
-                .catch(console.log);
-        }
-    }
-});
-
-uRouter.get('/uid/:uid', ut.isLoggedIn, (req, res) => {
-    let uid = req.params.uid;
-    if (req.session.uid !== 'admin' && uid != req.session.uid) {
-        let html = alert.alertMsg('조회 권한이 없습니다.', `/bbs/list/1`);
-        res.send(html);
-    } else {
-        dm.getUserInfo(uid)
-            .then(result => {
-                let navBar = vm.navBar(req.session.uname?req.session.uname:'개발자');
-                ejs.renderFile('./view/userView.ejs', {
-                    path, navBar, result
+        let page = parseInt(req.params.page);
+        let offset = (page - 1) * 10;
+        //console.log(`offset = ${offset}`);
+        Promise.all([dm.getUserTotalCount(), dm.getUserList(offset)])
+            .then(([result, rows]) => {
+                let totalPage = Math.ceil(result.count / 10);
+                let navBar = vm.navBar(req.session.uname);
+                let trs = vm.userList_trs(rows);
+                let pages = vm.userList_pages(page, totalPage);
+                ejs.renderFile('./view/userList.ejs', {
+                    path, navBar, trs, pages
                 }, (error, html) => {
-                    res.send(html);
+                    res.send(html); 
                 });
             })
             .catch(console.log);
     }
+});
+
+uRouter.get('/uid/:uid', ut.isLoggedIn, ut.isAdminOrOwner, (req, res) => {
+    dm.getUserInfo(req.params.uid)
+        .then(result => {
+            let navBar = vm.navBar(req.session.uname);
+            ejs.renderFile('./view/userView.ejs', {
+                path, navBar, result
+            }, (error, html) => {
+                res.send(html);
+            });
+        })
+        .catch(console.log);
 });
 
 uRouter.get('/register', (req, res) => {
@@ -103,23 +92,17 @@ uRouter.post('/register', upload.single('photo'), (req, res) => {
     }
 });
 
-uRouter.get('/update/:uid', ut.isLoggedIn, (req, res) => {
-    let uid = req.params.uid;
-    if (uid != req.session.uid) {
-        let html = alert.alertMsg('수정 권한이 없습니다.', `/bbs/list/1`);
-        res.send(html);
-    } else {
-        dm.getUserInfo(uid)
-        .then(result => {
-            let navBar = vm.navBar(req.session.uname?req.session.uname:'개발자');
-            ejs.renderFile('./view/userUpdate.ejs', {
-                path, navBar, result
-            }, (error, html) => {
-                res.send(html);
-            });
-        })
-        .catch(console.log);
-    }
+uRouter.get('/update/:uid', ut.isLoggedIn, ut.hasRight, (req, res) => {
+    dm.getUserInfo(req.params.uid)
+    .then(result => {
+        let navBar = vm.navBar(req.session.uname?req.session.uname:'개발자');
+        ejs.renderFile('./view/userUpdate.ejs', {
+            path, navBar, result
+        }, (error, html) => {
+            res.send(html);
+        });
+    })
+    .catch(console.log);
 });
 
 uRouter.post('/update', ut.isLoggedIn, upload.single('photo'), (req, res) => {
@@ -144,24 +127,18 @@ uRouter.post('/update', ut.isLoggedIn, upload.single('photo'), (req, res) => {
     }
 });
 
-uRouter.get('/delete/:uid', ut.isLoggedIn, (req, res) => {
+uRouter.get('/delete/:uid', ut.isLoggedIn, ut.isAdmin, (req, res) => {
     let uid = req.params.uid;
-    if (req.session.uid !== 'admin') {
-        let html = alert.alertMsg('삭제 권한이 없습니다.', `/bbs/list/1`);
+    let navBar = vm.navBar(req.session.uname);
+    ejs.renderFile('./view/userDelete.ejs', {
+        path, navBar, uid
+    }, (error, html) => {
         res.send(html);
-    } else {
-        let navBar = vm.navBar(req.session.uname?req.session.uname:'개발자');
-        ejs.renderFile('./view/userDelete.ejs', {
-            path, navBar, uid
-        }, (error, html) => {
-            res.send(html);
-        });
-    }
+    });
 });
 
 uRouter.get('/deleteConfirm/:uid', ut.isLoggedIn, (req, res) => {
-    let uid = req.params.uid;
-    dm.deleteUser(uid)
+    dm.deleteUser(req.params.uid)
         .then(() => { res.redirect('/user/list/1'); })
         .catch(console.log);
 });
