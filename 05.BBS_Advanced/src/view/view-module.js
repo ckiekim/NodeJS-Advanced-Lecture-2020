@@ -42,7 +42,7 @@ module.exports = {
                 `${row.title}<span class="text-danger">[${row.replyCount}]</span>`;
             trs += `<tr class="d-flex">
                         <td class="col-1" style="text-align: center;">${row.bid}</td>
-                        <td class="col-6"><a href="/bbs/bid/${row.bid}"><strong>${title}</strong></a></td>
+                        <td class="col-6"><a href="/bbs/bid/${row.bid}/inc/1"><strong>${title}</strong></a></td>
                         <td class="col-2" style="text-align: center;">${row.uname}</td>
                         <td class="col-2" style="text-align: center;">${displayTime}</td>
                         <td class="col-1" style="text-align: center;">${row.viewCount}</td>

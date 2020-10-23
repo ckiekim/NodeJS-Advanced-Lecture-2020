@@ -13,7 +13,7 @@ function getConnection() {
     });
     conn.connect(function(error) {
         if (error) 
-            console.log('mysql connection error :' + err);
+            console.log('mysql connection error :' + error);
     });
     return conn;
 }

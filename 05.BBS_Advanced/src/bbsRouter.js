@@ -60,18 +60,20 @@ bRouter.post('/search', ut.isLoggedIn, (req, res) => {
         .catch(console.log);
 });
 
-bRouter.get('/bid/:bid', ut.isLoggedIn, (req, res) => {
+bRouter.get('/bid/:bid/inc/:inc', ut.isLoggedIn, (req, res) => {
     let bid = parseInt(req.params.bid);
+    let inc = parseInt(req.params.inc);     // reply 이후 조회수 늘리지 않음
     Promise.all([dm.getBbsData(bid), dm.getReplyData(bid)])
         .then(([result, replies]) => {
             let navBar = vm.navBar(req.session.uname);
             let cards = vm.bbsView_cards(replies);
+            let page = req.session.currentPage;
             // 본인 글이면 조회수 증가시키지 않음
-            let inc = (result.uid === req.session.uid) ? 0 : 1;
+            inc = (result.uid === req.session.uid) ? 0 : inc;
             dm.increaseViewCount(bid, inc)
             .then(() => {
                 ejs.renderFile('./view/bbsView.ejs', {
-                    path, navBar, result, inc, cards
+                    path, navBar, result, inc, cards, page
                 }, (error, html) => {
                     res.send(html);
                 });
@@ -88,7 +90,7 @@ bRouter.post('/reply', ut.isLoggedIn, (req, res) => {
     let isMine = (uid === req.body.uid) ? 1 : 0;
     let params = [bid, uid, content, isMine];
     Promise.all([dm.insertReply(params), dm.increaseReplyCount(bid)])
-        .then(() => { res.redirect(`/bbs/bid/${bid}`); })
+        .then(() => { res.redirect(`/bbs/bid/${bid}/inc/0`); })
         .catch(console.log);
 });
 
@@ -130,7 +132,7 @@ bRouter.post('/update', ut.isLoggedIn, (req, res) => {
     let content = req.body.content;
     let params = [title, content, bid];
     dm.updateBbs(params)
-        .then(() => { res.redirect(`/bbs/bid/${bid}`); })
+        .then(() => { res.redirect(`/bbs/bid/${bid}/inc/0`); })
         .catch(console.log);
 });
 
