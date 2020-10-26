@@ -6,7 +6,7 @@ module.exports = {
         <nav class="navbar navbar-expand-lg bg-dark navbar-dark fixed-top">
             <a class="navbar-brand" href="#">
                 <img src="/img/hoseo.png" alt="호서직업능력개발원"
-                    style="height: 40px; margin-left: 50px; margin-right: 100px;">
+                    style="height: 40px; margin-left: 50px; margin-right: 80px;">
             </a>
             <ul class="nav mr-auto">
                 <li class="nav-item nav-light">
@@ -17,6 +17,9 @@ module.exports = {
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/user/dispatch"><i class="far fa-user"></i>사용자</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/viewChart"><i class="fas fa-chart-bar"></i></a>
                 </li>
                 <li class="nav-item ml-5">
                     <a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i>로그아웃</a>
@@ -136,5 +139,14 @@ module.exports = {
                     <span aria-hidden="true">&raquo;</span></a>
                 </li>`;
         return pages;
+    },
+    adminViewChart_data:     function(rows) {
+        labels = [];
+        data = [];
+        for (let row of rows) {
+            labels.push(`${row.title}, ${row.uname}`);
+            data.push(row.viewCount);
+        }
+        return {labels: JSON.stringify(labels), data: JSON.stringify(data)};
     }
 }

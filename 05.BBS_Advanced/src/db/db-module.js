@@ -213,7 +213,7 @@ module.exports = {
                         LIMIT 10 OFFSET ?;`;
             let [rows] = await conn.query(sql, offset);
             conn.release();
-            return(rows);     // 주의할 것
+            return(rows);
         } catch (error) {
             console.log(error);
             return false;
@@ -246,6 +246,26 @@ module.exports = {
             let [rows] = await conn.query(sql, uid);     
             conn.release();
             return; 
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
+    },
+
+    // Admin 용
+    getViewList:    async function() {
+        try {
+            let conn = await connectionPool.getConnection(async conn => conn);
+            let sql = `SELECT b.bid, b.uid, u.uname, b.title, b.viewCount, b.replyCount
+                        FROM bbs AS b
+                        JOIN users AS u
+                        ON b.uid=u.uid
+                        WHERE b.isDeleted=0
+                        ORDER BY b.viewCount DESC 
+                        LIMIT 10;`;
+            let [rows] = await conn.query(sql);
+            conn.release();
+            return(rows);
         } catch (error) {
             console.log(error);
             return false;

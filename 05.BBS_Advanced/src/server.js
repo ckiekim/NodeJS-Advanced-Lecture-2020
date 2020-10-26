@@ -10,6 +10,7 @@ const morgan = require('morgan');
 const dm = require('./db/db-module');
 const bRouter = require('./bbsRouter');
 const uRouter = require('./userRouter');
+const aRouter = require('./adminRouter');
 const ut = require('./util');
 
 const app = express();
@@ -17,6 +18,7 @@ app.use('/bootstrap', express.static(__dirname + '/../node_modules/bootstrap/dis
 app.use('/jquery', express.static(__dirname + '/../node_modules/jquery/dist'));
 app.use('/popper', express.static(__dirname + '/../node_modules/@popperjs/core/dist/umd'));
 app.use('/ckeditor', express.static(__dirname + '/../node_modules/ckeditor4'));
+app.use('/chart', express.static(__dirname + '/../node_modules/chart.js/dist'));
 app.use(express.static(__dirname + '/../public'));
 app.use(favicon(__dirname + '/../public/favicon.ico'));
 app.use(bodyParser.urlencoded({extended: false})); 
@@ -30,6 +32,7 @@ app.use(session({
 //app.use(morgan('combined'));
 app.use('/bbs', bRouter);
 app.use('/user', uRouter);
+app.use('/admin', aRouter);
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/view');
 
