@@ -1,6 +1,6 @@
 const fs = require('fs');
 const mysql = require('mysql');
-let info = fs.readFileSync('./mysql.json', 'utf8');
+let info = fs.readFileSync('./db/mysql.json', 'utf8');
 let config = JSON.parse(info);
 
 function getConnection() {
@@ -13,7 +13,7 @@ function getConnection() {
     });
     conn.connect(function(error) {
         if (error) 
-            console.log('mysql connection error :' + err);
+            console.log('mysql connection error :' + error);
     });
     return conn;
 }
@@ -26,7 +26,8 @@ function getConnection() {
         tel varchar(20),
         email varchar(40),
         regDate datetime default current_timestamp,
-        isDeleted int default 0
+        isDeleted int default 0,
+        photo varchar(80)
     );
 `;
 let conn = getConnection();
@@ -36,7 +37,25 @@ conn.query(sqlUsers, function(error, fields) {
 });
 conn.end(); */
 
-let sqlBbs = `
+/* let users = [
+    ['admin', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', '관리자', '010-2345-6789', 'admin@hoseo.com', '/upload/blank.png'],
+    ['eskim', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', '김은숙', '010-9876-5432', 'eskim@hoseo.com', '/upload/blank.png'],
+    ['wjlee', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', '이우정', '010-3456-7890', 'wjlee@hoseo.com', '/upload/blank.png'],
+    ['djy', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', '대조영', '010-2323-7878', 'djy@korea.com', '/upload/blank.png'],
+    ['gdhong', 'A6xnQhbz4Vx2HuGl4lXwZ5U2I8iziLRFnhP5eNfIRvQ=', '홍길동', '010-9898-4567', 'gdhong@korea.com', '/upload/blank.png']
+];
+let sqlRegister = `insert into users(uid, pwd, uname, tel, email, photo) values(?,?,?,?,?,?);`;
+
+let conn = getConnection();
+for (let params of users) {
+    conn.query(sqlRegister, params, function(error, fields) {
+        if (error)
+            console.log(error);
+    });
+}
+conn.end(); */
+
+/* let sqlBbs = `
     create table if not exists bbs (
         bid int not null primary key auto_increment,
         uid varchar(20) not null,
@@ -54,7 +73,7 @@ conn.query(sqlBbs, function(error, fields) {
     if (error)
         console.log(error);
 });
-conn.end();
+conn.end(); */
 
 /* let bbsArray = [
     ['eskim', '미스터 션샤인', `2018년 방영한, 구한말을 배경으로 하는 한국 드라마.`],
@@ -96,9 +115,9 @@ conn.query(replyBbs, function(error, fields) {
 conn.end(); */
 
 /* let replyArray = [
-    [1006, 'djy', '좋습니다. 매우 훌륭한 작품입니다.'],
-    [1006, 'gdhong', '매우매우 훌륭합니다.'],
-    [1011, 'eskim', '너무 좋은 작품입니다. 잘 보았어요.']
+    [1010, 'djy', '좋습니다. 매우 훌륭한 작품입니다.'],
+    [1010, 'gdhong', '매우매우 훌륭합니다.'],
+    [1012, 'eskim', '너무 좋은 작품입니다. 잘 보았어요.']
 ];
 let sqlInsertReply = `insert into reply(bid, uid, content) values(?,?,?);`;
 
@@ -111,17 +130,16 @@ for (let params of replyArray) {
 }
 conn.end(); */
 
-/* let sqlSelect = `select * from bbs where bid=1006;`;
-let sqlReplyCount = `select count(*) as count from reply where bid=?;`;
+let bbsReply = [
+    [1, 1, 1012], [2, 2, 1010], [1, 1, 1006], [2, 2, 1005]
+];
+let replyUpdate = `update bbs set viewCount=?, replyCount=? where bid=?;`;
 
 let conn = getConnection();
-conn.query(sqlSelect, (error, rows, fields) => {
-    let result = rows[0];
-    let conn2 = getConnection();
-    conn2.query(sqlReplyCount, result.bid, (err, res, fields) => {
-        result.count = res[0].count;
-        console.log(result);
+for (let params of bbsReply) {
+    conn.query(replyUpdate, params, function(error, fields) {
+        if (error)
+            console.log(error);
     });
-    conn2.end();
-})
-conn.end(); */
+}
+conn.end();

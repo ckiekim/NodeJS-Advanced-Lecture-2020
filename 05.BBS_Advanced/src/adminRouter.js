@@ -14,7 +14,8 @@ aRouter.get('/viewChart', ut.isAdmin, (req, res) => {
         let navBar = vm.navBar(req.session.uname);
         let cd = vm.adminViewChart_data(rows);
         ejs.renderFile('./view/adminViewChart.ejs', {
-            path, navBar, labels:cd.labels, data: cd.data
+            path, navBar, 
+            labels:cd.labels, data: cd.data, tooltips: cd.tooltips
         }, (error, html) => {
             res.send(html);
         });

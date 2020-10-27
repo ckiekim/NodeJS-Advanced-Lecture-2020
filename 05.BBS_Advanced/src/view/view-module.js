@@ -143,10 +143,16 @@ module.exports = {
     adminViewChart_data:     function(rows) {
         labels = [];
         data = [];
+        tooltips = [];
         for (let row of rows) {
             labels.push(`${row.title}, ${row.uname}`);
             data.push(row.viewCount);
+            tooltips.push(row.bid);
         }
-        return {labels: JSON.stringify(labels), data: JSON.stringify(data)};
+        return {
+            labels: JSON.stringify(labels), 
+            data: JSON.stringify(data),
+            tooltips: JSON.stringify(tooltips)
+        };
     }
 }

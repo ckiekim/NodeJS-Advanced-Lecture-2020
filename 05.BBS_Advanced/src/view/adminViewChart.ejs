@@ -25,6 +25,7 @@
         var ctx = document.getElementById('myChart').getContext('2d');
         var labels = JSON.parse('<%- labels %>');
         var data = JSON.parse('<%- data %>');
+        var tooltips = JSON.parse('<%- tooltips %>');
         var myChart = new Chart(ctx, {
             type: 'horizontalBar',
             data: {
@@ -66,6 +67,18 @@
                             beginAtZero: true
                         }
                     }]
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            //let label = `<a href="/bbs/${tooltips[tooltipItem.index]}">`;
+                            let label = `${data.datasets[tooltipItem.datasetIndex].label}: `;
+                            label += `${tooltipItem.xLabel}, `;
+                            label += `bid=${tooltips[tooltipItem.index]}`;
+                            //label += '</a>';
+                            return label;
+                        }
+                    }
                 }
             }
         });
